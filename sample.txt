@@ -1,0 +1,43 @@
+npm install prisma @prisma/client
+npx prisma init
+npx prisma generate
+npx prisma db push
+---
+.env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/shipment"
+---
+prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Struct {
+  id Int @id @default(autoincrement())
+  structNumber String @unique
+  arr String[]
+}
+---
+lib/prisma
+import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 
+---
+
+
+
+
+psql -U postgres
+create database shipment;
+\q
+
