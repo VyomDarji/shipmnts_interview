@@ -14,8 +14,41 @@ datasource db {
 }
 
 
-model Struct {
-  id Int @id @default(autoincrement())
-  structNumber String @unique
-  arr String[]
+model Store {
+  id String @id @default(cuid())
+  store_location String @unique
+  currency String
+  tax_percentage Float
+  preimum_items String[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  pricing_plans PricingPlan[]
+
+  @@map("stores")
+}
+
+model PricingPlan{
+    id String @id @default(cuid())
+    plan_id Int @default(autoincrement())
+    store_location String
+    valid_from DateTime
+    valid_to DateTime
+    created_at DateTime @default(now())
+
+    store Store @relation(fields:[store_location],references:[store_location])
+    items PricingItems[]
+    @@map("pricing_plans")
+}
+
+model PricingItems{
+      id String @id @default(cuid())
+  category String
+  name String
+  half_price Int
+  full_price Int
+  extra_charge Int
+  pricing_plan_id String
+  pricing_plan PricingPlan @relation(fields:[pricing_plan_id],references:[id],onDelete:Cascade)
+
+  @@map("pricing_items")
 }
